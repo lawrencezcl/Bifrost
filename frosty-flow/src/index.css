@@ -1,0 +1,120 @@
+@import 'antd/dist/reset.css';
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Uniswap风格的深色主题 */
+:root {
+  --uniswap-blue: #1890ff;
+  --uniswap-purple: #722ed1;
+  --uniswap-green: #52c41a;
+  --uniswap-red: #f5222d;
+  --background-dark: #1a1a1a;
+  --card-bg: #262626;
+  --card-border: #303030;
+}
+
+/* Frosty Card 样式 */
+.frosty-card {
+  background: rgba(38, 38, 38, 0.8) !important;
+  border: 1px solid rgba(48, 48, 48, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ant-card {
+    margin-bottom: 16px;
+  }
+  
+  .ant-row {
+    margin: 0 !important;
+  }
+  
+  .ant-col {
+    padding: 0 !important;
+    margin-bottom: 16px;
+  }
+}
+
+/* 按钮样式 */
+.ant-btn-primary {
+  background: linear-gradient(90deg, var(--uniswap-blue), var(--uniswap-purple)) !important;
+  border: none !important;
+  border-radius: 8px !important;
+}
+
+.ant-btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* 输入框样式 */
+.ant-input, .ant-select-selector {
+  background: rgba(38, 38, 38, 0.8) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+}
+
+.ant-input:focus, .ant-select-selector:focus {
+  border-color: var(--uniswap-blue) !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+/* 统计数字样式 */
+.ant-statistic-content {
+  color: #ffffff !important;
+}
+
+/* 标题样式 */
+.ant-typography h1, .ant-typography h2, .ant-typography h3, .ant-typography h4 {
+  color: #ffffff !important;
+}
+
+/* 链接样式 */
+.ant-typography a {
+  color: var(--uniswap-blue) !important;
+}
+
+/* 警告框样式 */
+.ant-alert {
+  background: rgba(38, 38, 38, 0.8) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 8px !important;
+}
+
+/* 列表项样式 */
+.ant-list-item {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid var(--card-border) !important;
+}
+
+/* 表单元素样式 */
+.ant-form-item-label > label {
+  color: #d9d9d9 !important;
+}
+
+/* 移动端优化 */
+@media (max-width: 576px) {
+  .ant-statistic-title {
+    font-size: 12px !important;
+  }
+  
+  .ant-statistic-content {
+    font-size: 18px !important;
+  }
+  
+  .ant-card-head-title {
+    font-size: 16px !important;
+  }
+}

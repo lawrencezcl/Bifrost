@@ -1,0 +1,42 @@
+{
+  "name": "frosty-flow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@polkadot/api": "^10.13.1",
+    "@polkadot/extension-dapp": "^0.46.9",
+    "@polkadot/keyring": "^13.5.6",
+    "@polkadot/util": "^12.6.2",
+    "@polkadot/util-crypto": "^12.6.2",
+    "@reduxjs/toolkit": "^2.0.0",
+    "antd": "^5.20.0",
+    "axios": "^1.6.0",
+    "bignumber.js": "^9.1.0",
+    "dayjs": "^1.11.0",
+    "echarts": "^5.4.0",
+    "echarts-for-react": "^3.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.0.0",
+    "react-router-dom": "^6.20.0",
+    "react-use": "^17.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.50.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "globals": "^13.0.0",
+    "vite": "^5.0.0"
+  }
+}

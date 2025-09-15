@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrostyFlow - Bifrost多链流动性质押平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0D111C;
+            min-height: 100vh;
+            color: #FFFFFF;
+            background-image: 
+                radial-gradient(50% 50% at 50% 50%, rgba(252, 7, 125, 0.02) 0%, rgba(255, 255, 255, 0) 100%),
+                radial-gradient(50% 50% at 50% 50%, rgba(255, 120, 200, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 60px 0 40px;
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FC077D, #FF78C8, #7C3AED);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+        
+        .dashboard {
+            background: rgba(26, 31, 44, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(252, 7, 125, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+            backdrop-filter: blur(20px);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #FC077D, #FF78C8, #7C3AED);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(252, 7, 125, 0.3);
+            box-shadow: 0 12px 40px rgba(252, 7, 125, 0.15);
+        }
+        
+        .stat-card h3 {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 16px;
+            font-size: 0.95em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 2.4em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FC077D, #FF78C8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .nav-btn {
+            background: rgba(26, 31, 44, 0.8);
+            backdrop-filter: blur(20px);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-btn:hover {
+            color: #FFFFFF;
+            border-color: rgba(252, 7, 125, 0.5);
+            box-shadow: 0 4px 20px rgba(252, 7, 125, 0.15);
+        }
+        
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+        
+        .nav-btn.active {
+            background: linear-gradient(135deg, #FC077D, #FF78C8);
+            color: #FFFFFF;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(252, 7, 125, 0.3);
+        }
+        
+        .asset-list {
+            margin-top: 20px;
+        }
+        
+        .asset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin: 12px 0;
+            background: rgba(26, 31, 44, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .asset-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(135deg, #FC077D, #7C3AED);
+        }
+        
+        .asset-item:hover {
+            border-color: rgba(252, 7, 125, 0.3);
+            transform: translateX(4px);
+            box-shadow: 0 8px 32px rgba(252, 7, 125, 0.1);
+        }
+        
+        .asset-info h4 {
+            color: #FFFFFF;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .asset-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+            font-weight: 400;
+        }
+        
+        .asset-value {
+            text-align: right;
+        }
+        
+        .asset-amount {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #FFFFFF;
+        }
+        
+        .asset-usd {
+            background: linear-gradient(135deg, #10B981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10B981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+        }
+        
+        .wallet-section {
+            background: rgba(26, 31, 44, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .wallet-btn {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wallet-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .wallet-btn:hover::before {
+            left: 100%;
+        }
+        
+        .wallet-btn.connected {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+        
+        .wallet-btn.connected:hover {
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .interactive-demo {
+            background: rgba(26, 31, 44, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .demo-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(26, 31, 44, 0.8);
+            color: #FFFFFF;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-input:focus {
+            outline: none;
+            border-color: #FC077D;
+            box-shadow: 0 0 0 2px rgba(252, 7, 125, 0.2);
+        }
+        
+        .demo-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #FC077D, #FF78C8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(252, 7, 125, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🌟 FrostyFlow</h1>
+            <p>Bifrost 多链流动性质押一站式交互平台</p>
+        </div>
+        
+        <!-- 钱包连接区域 -->
+        <div class="wallet-section">
+            <h3>🔗 钱包连接状态</h3>
+            <button class="wallet-btn" id="walletBtn" onclick="toggleWallet()">
+                👛 连接钱包
+            </button>
+            <p style="margin-top: 10px; color: rgba(255, 255, 255, 0.7);" id="walletStatus">
+                请连接您的Web3钱包开始使用
+            </p>
+        </div>
+        
+        <!-- 导航 -->
+        <div class="navigation">
+            <button class="nav-btn active" onclick="showPage('dashboard')">📊 资产总览</button>
+            <button class="nav-btn" onclick="showPage('stake')">💰 质押铸造</button>
+            <button class="nav-btn" onclick="showPage('redeem')">🔄 质押赎回</button>
+        </div>
+        
+        <!-- 主要内容区域 -->
+        <div class="dashboard" id="dashboardPage">
+            <h2>📊 资产总览</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>总资产价值</h3>
+                    <div class="stat-value">$5,621.75</div>
+                </div>
+                <div class="stat-card">
+                    <h3>累计收益</h3>
+                    <div class="stat-value">$282.31</div>
+                </div>
+                <div class="stat-card">
+                    <h3>质押资产数</h3>
+                    <div class="stat-value">3种</div>
+                </div>
+                <div class="stat-card">
+                    <h3>活跃链数</h3>
+                    <div class="stat-value">2条</div>
+                </div>
+            </div>
+            
+            <div class="asset-list">
+                <h3>💎 我的质押资产</h3>
+                
+                <div class="asset-item">
+                    <div class="asset-info">
+                        <h4>DOT (Polkadot)</h4>
+                        <p>Bifrost Mainnet • APY: 15.8%</p>
+                    </div>
+                    <div class="asset-value">
+                        <div class="asset-amount">124.25 DOT</div>
+                        <div class="asset-usd">≈ $2,480.50</div>
+                    </div>
+                </div>
+                
+                <div class="asset-item">
+                    <div class="asset-info">
+                        <h4>GLMR (Moonbeam)</h4>
+                        <p>Moonbase Alpha • APY: 12.5%</p>
+                    </div>
+                    <div class="asset-value">
+                        <div class="asset-amount">850.25 GLMR</div>
+                        <div class="asset-usd">≈ $1,890.75</div>
+                    </div>
+                </div>
+                
+                <div class="asset-item">
+                    <div class="asset-info">
+                        <h4>KSM (Kusama)</h4>
+                        <p>Bifrost Mainnet • APY: 18.2%</p>
+                    </div>
+                    <div class="asset-value">
+                        <div class="asset-amount">45.85 KSM</div>
+                        <div class="asset-usd">≈ $1,250.30</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 质押页面 -->
+        <div class="dashboard" id="stakePage" style="display: none;">
+            <h2>💰 质押铸造</h2>
+            
+            <div class="interactive-demo">
+                <h3>🎯 交互式质押演示</h3>
+                <p>选择资产和输入数量来体验质押功能</p>
+                
+                <div class="demo-controls">
+                    <select class="demo-input" id="stakeAsset">
+                        <option value="DOT">DOT - Polkadot (APY: 15.8%)</option>
+                        <option value="GLMR">GLMR - Moonbeam (APY: 12.5%)</option>
+                        <option value="KSM">KSM - Kusama (APY: 18.2%)</option>
+                    </select>
+                    <input type="number" class="demo-input" id="stakeAmount" placeholder="输入质押数量">
+                    <button class="demo-btn" onclick="simulateStake()">模拟质押</button>
+                </div>
+                
+                <div id="stakeResult" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+        
+        <!-- 赎回页面 -->
+        <div class="dashboard" id="redeemPage" style="display: none;">
+            <h2>🔄 质押赎回</h2>
+            
+            <div class="interactive-demo">
+                <h3>💸 交互式赎回演示</h3>
+                <p>选择赎回类型和数量来体验赎回功能</p>
+                
+                <div class="demo-controls">
+                    <select class="demo-input" id="redeemAsset">
+                        <option value="vDOT">vDOT → DOT (可赎回: 124.25)</option>
+                        <option value="vGLMR">vGLMR → GLMR (可赎回: 850.25)</option>
+                        <option value="vKSM">vKSM → KSM (可赎回: 45.85)</option>
+                    </select>
+                    <input type="number" class="demo-input" id="redeemAmount" placeholder="输入赎回数量">
+                    <button class="demo-btn" onclick="simulateRedeem()">模拟赎回</button>
+                </div>
+                
+                <div style="margin: 15px 0; color: rgba(255, 255, 255, 0.8);">
+                    <label style="display: block; margin: 10px 0;"><input type="radio" name="redeemType" value="standard" checked style="margin-right: 8px;"> 标准赎回 (28天，0.5%手续费)</label>
+                    <label style="display: block; margin: 10px 0;"><input type="radio" name="redeemType" value="instant" style="margin-right: 8px;"> 即时赎回 (立即，3%手续费)</label>
+                </div>
+                
+                <div id="redeemResult" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+        
+        <!-- 系统状态 -->
+        <div class="status-panel">
+            <h3>✅ 系统运行状态</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>前端界面正常</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>模拟数据已加载</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>交互功能正常</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator" id="walletIndicator" style="background: #faad14;"></div>
+                    <span id="walletStatusText">钱包未连接</span>
+                </div>
+            </div>
+            <p style="margin-top: 15px; color: rgba(255, 255, 255, 0.8);">
+                🕐 当前时间: <span id="currentTime"></span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let isWalletConnected = false;
+        
+        // 更新时间
+        function updateTime() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // 钱包连接切换
+        function toggleWallet() {
+            isWalletConnected = !isWalletConnected;
+            const btn = document.getElementById('walletBtn');
+            const status = document.getElementById('walletStatus');
+            const indicator = document.getElementById('walletIndicator');
+            const statusText = document.getElementById('walletStatusText');
+            
+            if (isWalletConnected) {
+                btn.textContent = '🟢 钱包已连接';
+                btn.className = 'wallet-btn connected';
+                status.textContent = '钱包连接成功！地址: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+                indicator.style.background = '#10B981';
+                indicator.style.boxShadow = '0 0 6px rgba(16, 185, 129, 0.6)';
+                statusText.textContent = '钱包已连接';
+                
+                // 添加脉冲动画
+                btn.classList.add('pulse');
+                setTimeout(() => btn.classList.remove('pulse'), 2000);
+            } else {
+                btn.textContent = '👛 连接钱包';
+                btn.className = 'wallet-btn';
+                status.textContent = '请连接您的Web3钱包开始使用';
+                indicator.style.background = '#F59E0B';
+                indicator.style.boxShadow = '0 0 6px rgba(245, 158, 11, 0.6)';
+                statusText.textContent = '钱包未连接';
+            }
+        }
+        
+        // 页面切换
+        function showPage(page) {
+            // 隐藏所有页面
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('stakePage').style.display = 'none';
+            document.getElementById('redeemPage').style.display = 'none';
+            
+            // 显示目标页面
+            document.getElementById(page + 'Page').style.display = 'block';
+            
+            // 更新导航按钮状态
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // 模拟质押
+        function simulateStake() {
+            const asset = document.getElementById('stakeAsset').value;
+            const amount = document.getElementById('stakeAmount').value;
+            const resultDiv = document.getElementById('stakeResult');
+            
+            if (!isWalletConnected) {
+                resultDiv.innerHTML = '<p style="color: #f5222d;">❌ 请先连接钱包</p>';
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                resultDiv.innerHTML = '<p style="color: #faad14;">⚠️ 请输入有效的质押数量</p>';
+                return;
+            }
+            
+            const apyMap = { DOT: 15.8, GLMR: 12.5, KSM: 18.2 };
+            const apy = apyMap[asset];
+            const yearlyReturn = (parseFloat(amount) * apy / 100).toFixed(4);
+            const dailyReturn = (parseFloat(yearlyReturn) / 365).toFixed(6);
+            
+            resultDiv.innerHTML = `
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; backdrop-filter: blur(20px);">
+                    <h4 style="color: #10B981; margin: 0 0 12px 0; font-weight: 600;">✅ 质押模拟成功！</h4>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>质押资产:</strong> ${amount} ${asset}</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>年化收益率:</strong> ${apy}%</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>预估年收益:</strong> ${yearlyReturn} ${asset}</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>预估日收益:</strong> ${dailyReturn} ${asset}</p>
+                    <p style="color: rgba(252, 7, 125, 0.9); margin-top: 12px; font-weight: 500;">💡 实际操作中，您将收到对应的流动性质押代币 (v${asset})</p>
+                </div>
+            `;
+        }
+        
+        // 模拟赎回
+        function simulateRedeem() {
+            const asset = document.getElementById('redeemAsset').value;
+            const amount = document.getElementById('redeemAmount').value;
+            const redeemType = document.querySelector('input[name="redeemType"]:checked').value;
+            const resultDiv = document.getElementById('redeemResult');
+            
+            if (!isWalletConnected) {
+                resultDiv.innerHTML = '<p style="color: #f5222d;">❌ 请先连接钱包</p>';
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                resultDiv.innerHTML = '<p style="color: #faad14;">⚠️ 请输入有效的赎回数量</p>';
+                return;
+            }
+            
+            let fee, waitTime, actualAmount;
+            if (redeemType === 'instant') {
+                fee = parseFloat(amount) * 0.03;
+                actualAmount = parseFloat(amount) * 0.97;
+                waitTime = '立即到账';
+            } else {
+                fee = parseFloat(amount) * 0.005;
+                actualAmount = parseFloat(amount) * 0.995;
+                waitTime = '28天后到账';
+            }
+            
+            const originalAsset = asset.replace('v', '');
+            
+            resultDiv.innerHTML = `
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 20px; backdrop-filter: blur(20px);">
+                    <h4 style="color: #F59E0B; margin: 0 0 12px 0; font-weight: 600;">💸 赎回模拟成功！</h4>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>赎回类型:</strong> ${redeemType === 'instant' ? '即时赎回' : '标准赎回'}</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>申请赎回:</strong> ${amount} ${asset}</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>手续费:</strong> ${fee.toFixed(4)} ${originalAsset}</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>实际到账:</strong> ${actualAmount.toFixed(4)} ${originalAsset}</p>
+                    <p style="margin: 8px 0; color: rgba(255, 255, 255, 0.9);"><strong>到账时间:</strong> ${waitTime}</p>
+                    <p style="color: rgba(252, 7, 125, 0.9); margin-top: 12px; font-weight: 500;">💡 ${redeemType === 'instant' ? '即时赎回手续费较高但立即到账' : '标准赎回手续费低但需要等待解锁期'}</p>
+                </div>
+            `;
+        }
+        
+        // 页面加载完成后的动画效果
+        window.addEventListener('load', function() {
+            document.querySelector('.header h1').style.animation = 'pulse 2s ease-in-out';
+            
+            // 统计卡片动画
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.transition = 'transform 0.5s ease';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
