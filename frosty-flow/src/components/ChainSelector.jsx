@@ -21,7 +21,7 @@ import {
   PlusOutlined
 } from '@ant-design/icons';
 
-import { switchChain, connectToChain } from '../store/slices/chainSlice';
+import { switchChain } from '../store/slices/chainSlice';
 import { CHAIN_CONFIGS } from '../api/bifrost';
 import { formatUtils } from '../utils';
 
@@ -127,7 +127,7 @@ const ChainSelector = () => {
     <div className="flex items-center space-x-2">
       {/* 当前链状态显示 */}
       {renderCurrentChainStatus()}
-      
+
       {/* 链选择下拉框 */}
       <Select
         value={currentChain?.chainId}
@@ -157,6 +157,16 @@ const ChainSelector = () => {
           </Option>
         ))}
       </Select>
+
+      {error && (
+        <Alert
+          type="error"
+          message="链连接失败"
+          description={error}
+          showIcon
+          style={{ marginLeft: 12, minWidth: 200 }}
+        />
+      )}
 
       {/* 添加自定义链模态框 */}
       <Modal

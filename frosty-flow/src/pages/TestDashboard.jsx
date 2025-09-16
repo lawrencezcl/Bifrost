@@ -1,7 +1,7 @@
 // 测试版Dashboard
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Row, Col, Statistic, Button, List, Space } from 'antd';
-import { WalletOutlined, TrendingUpOutlined, DollarOutlined, GoldOutlined } from '@ant-design/icons';
+import { WalletOutlined, RiseOutlined, DollarOutlined, GoldOutlined } from '@ant-design/icons';
 import mockService from '../services/mockService';
 
 const { Title, Text } = Typography;
@@ -58,7 +58,7 @@ const TestDashboard = () => {
               title="累计收益"
               value={totalYield}
               precision={2}
-              prefix={<TrendingUpOutlined />}
+              prefix={<RiseOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
           </Card>

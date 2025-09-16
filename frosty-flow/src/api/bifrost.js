@@ -83,9 +83,10 @@ class BifrostApi {
   async getAssetBalance(address, assetId) {
     try {
       if (!this.api) throw new Error('API 未连接');
-      
+
       // TODO: 实现真实的余额查询
       // 这里返回模拟数据
+      console.debug('Mock getAssetBalance called', { address, assetId });
       return {
         free: '1000000000000', // 10^12
         locked: '500000000000'
@@ -115,13 +116,13 @@ class BifrostApi {
   }
 
   // 执行赎回
-  async stakeRedeem(fromAccount, assetId, amount, redeemType = 'standard') {
+  async stakeRedeem(fromAccount, assetId, amount, redeemType = 'standard', options = {}) {
     try {
       if (!this.api) throw new Error('API 未连接');
-      
+
       // TODO: 实现真实的赎回交易
-      console.log('执行赎回:', { fromAccount, assetId, amount, redeemType });
-      
+      console.log('执行赎回:', { fromAccount, assetId, amount, redeemType, options });
+
       return {
         hash: '0xabcdef1234567890',
         status: 'pending',

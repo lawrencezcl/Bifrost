@@ -123,16 +123,17 @@ class WalletService {
 
       // 获取主要代币余额
       const { data: balance } = await this.api.query.system.account(address);
-      
+
       const freeBalance = balance.free.toString();
       const reservedBalance = balance.reserved.toString();
       const frozenBalance = balance.frozen.toString();
-      
+
       // 计算可用余额
       const availableBalance = balance.free.sub(balance.frozen).toString();
 
       console.log('Account balance:', {
         address,
+        assetSymbol: assetSymbol || this.currentNetwork.symbol,
         free: freeBalance,
         reserved: reservedBalance,
         frozen: frozenBalance,

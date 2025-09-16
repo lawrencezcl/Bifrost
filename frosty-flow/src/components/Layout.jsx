@@ -1,14 +1,15 @@
 // 主布局组件
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Layout as AntLayout,
   Menu,
   Button,
   Tooltip,
-  Space,
   Typography,
-  Switch
+  Space,
+  Badge
 } from 'antd';
 import {
   DashboardOutlined,
@@ -31,16 +32,23 @@ const { Text } = Typography;
 const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const walletState = useSelector((state) => state.wallet);
+  const chainState = useSelector((state) => state.chain);
+  const notifications = useSelector((state) => state.ui.activeNotifications);
+
   // 本地状态
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState('light');
-  
-  // 模拟状态
-  const isConnected = false;
-  const currentChain = null;
-  const chainConnected = false;
-  
+
+  const walletConnected = walletState.isConnected;
+  const selectedAccount = walletState.selectedAccount;
+  const currentChain = chainState.currentChain;
+  const chainConnected = chainState.isConnected;
+  const unreadCount = useMemo(
+    () => notifications.filter((notification) => !notification.read).length,
+    [notifications]
+  );
+
   // 侧边栏菜单项
   const menuItems = [
     {
@@ -82,8 +90,6 @@ const Layout = ({ children }) => {
   };
 
   // 未读通知数量
-  const unreadCount = 0;
-
   const formatAddress = (address) => {
     if (!address) return '';
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -141,11 +147,19 @@ const Layout = ({ children }) => {
               icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             />
-            
-            <span>链选择器</span>
+
+            <div className="flex items-center space-x-2">
+              <span>链选择器</span>
+              {currentChain && (
+                <Badge
+                  color={chainConnected ? '#52c41a' : '#faad14'}
+                  text={currentChain.name}
+                />
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <Space align="center" size="middle">
             {/* 主题切换 */}
             <Tooltip title={theme === 'light' ? '切换到暗黑模式' : '切换到明亮模式'}>
               <Button
@@ -156,7 +170,9 @@ const Layout = ({ children }) => {
             </Tooltip>
 
             {/* 通知中心 */}
-            <Button type="text" icon={<BellOutlined />} />
+            <Badge count={unreadCount} size="small">
+              <Button type="text" icon={<BellOutlined />} />
+            </Badge>
 
             {/* 钱包连接状态 */}
             <Button
@@ -165,9 +181,11 @@ const Layout = ({ children }) => {
               onClick={() => console.log('连接钱包')}
               className="wallet-connect-btn"
             >
-              连接钱包
+              {walletConnected && selectedAccount
+                ? formatAddress(selectedAccount.address)
+                : '连接钱包'}
             </Button>
-          </div>
+          </Space>
         </Header>
 
         {/* 内容区域 */}

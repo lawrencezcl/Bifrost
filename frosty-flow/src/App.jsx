@@ -1,10 +1,123 @@
-import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, theme, App as AntApp } from 'antd';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+
 import store from './store';
-import AppSimple from './App-simple';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import StakeMint from './pages/StakeMint';
+import StakeRedeem from './pages/StakeRedeem';
+import Settings from './pages/Settings';
+import Help from './pages/Help';
+import AssetDetail from './pages/AssetDetail';
+import mockService from './services/mockService';
+import { setMockWalletState } from './store/slices/walletSlice';
+import { setMockChainState } from './store/slices/chainSlice';
 import './index.css';
+
+const MOCK_WALLET = 'Polkadot.js';
+const MOCK_CHAIN = 'bifrost-mainnet';
+
+const parseMockFlag = (rawValue) => {
+  if (rawValue === undefined || rawValue === null) {
+    return true;
+  }
+
+  const normalised = String(rawValue).trim().toLowerCase();
+  return normalised === 'true' || normalised === '1' || normalised === 'yes';
+};
+
+const AppRoutes = () => {
+  const dispatch = useDispatch();
+  const walletConnected = useSelector((state) => state.wallet.isConnected);
+  const chainConnected = useSelector((state) => state.chain.isConnected);
+  const bootstrapAttempted = useRef(false);
+  const mockEnabled = useMemo(
+    () => parseMockFlag(import.meta.env?.VITE_ENABLE_MOCK),
+    []
+  );
+
+  useEffect(() => {
+    if (!mockEnabled || bootstrapAttempted.current) {
+      return;
+    }
+
+    if (walletConnected && chainConnected) {
+      bootstrapAttempted.current = true;
+      return;
+    }
+
+    bootstrapAttempted.current = true;
+
+    let cancelled = false;
+
+    const defaults = mockService.getBootstrapDefaults();
+    if (!walletConnected && defaults.wallet) {
+      dispatch(setMockWalletState(defaults.wallet));
+    }
+
+    if (!chainConnected && defaults.chain) {
+      dispatch(
+        setMockChainState({
+          chain: defaults.chain,
+        })
+      );
+    }
+
+    const bootstrapMockState = async () => {
+      try {
+        if (!walletConnected) {
+          const walletResult = await mockService.connectWallet(MOCK_WALLET);
+          if (!cancelled) {
+            dispatch(
+              setMockWalletState({
+                wallet: walletResult.wallet,
+                accounts: walletResult.accounts,
+                selectedAccount: walletResult.selectedAccount,
+              })
+            );
+          }
+        }
+
+        if (!chainConnected) {
+          const chainResult = await mockService.connectChain(MOCK_CHAIN);
+          if (!cancelled) {
+            dispatch(
+              setMockChainState({
+                chain: chainResult.chain,
+              })
+            );
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('初始化模拟数据失败:', error);
+      }
+    };
+
+    bootstrapMockState();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, walletConnected, chainConnected, mockEnabled]);
+
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/stake" element={<StakeMint />} />
+        <Route path="/redeem" element={<StakeRedeem />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/assets/:symbol" element={<AssetDetail />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </Layout>
+  );
+};
 
 function App() {
   return (
@@ -20,7 +133,7 @@ function App() {
       >
         <AntApp>
           <Router>
-            <AppSimple />
+            <AppRoutes />
           </Router>
         </AntApp>
       </ConfigProvider>

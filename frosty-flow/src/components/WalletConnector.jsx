@@ -1,5 +1,5 @@
 // 钱包连接组件
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Card, Alert, Space, Typography, Spin, message } from 'antd';
 import { WalletOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { SUPPORTED_WALLETS, NETWORKS, DEFAULT_NETWORK } from '../config/networks';
