@@ -115,6 +115,28 @@ class MockService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  // 默认初始化状态，供快速渲染使用
+  getBootstrapDefaults() {
+    const wallet = this.mockWallets[0];
+    const chain = this.mockChains[0];
+
+    return {
+      wallet: wallet
+        ? {
+            wallet: { name: wallet.name },
+            accounts: wallet.accounts,
+            selectedAccount: wallet.accounts[0] || null
+          }
+        : null,
+      chain: chain
+        ? {
+            ...chain,
+            status: 'connected'
+          }
+        : null
+    };
+  }
+
   // 模拟钱包连接
   async connectWallet(walletType) {
     await this.delay(1000);

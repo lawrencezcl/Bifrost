@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, theme, App as AntApp } from 'antd';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -19,18 +19,51 @@ import './index.css';
 const MOCK_WALLET = 'Polkadot.js';
 const MOCK_CHAIN = 'bifrost-mainnet';
 
+const parseMockFlag = (rawValue) => {
+  if (rawValue === undefined || rawValue === null) {
+    return true;
+  }
+
+  const normalised = String(rawValue).trim().toLowerCase();
+  return normalised === 'true' || normalised === '1' || normalised === 'yes';
+};
+
 const AppRoutes = () => {
   const dispatch = useDispatch();
   const walletConnected = useSelector((state) => state.wallet.isConnected);
   const chainConnected = useSelector((state) => state.chain.isConnected);
-  const mockEnabled = import.meta.env?.VITE_ENABLE_MOCK === 'true';
+  const bootstrapAttempted = useRef(false);
+  const mockEnabled = useMemo(
+    () => parseMockFlag(import.meta.env?.VITE_ENABLE_MOCK),
+    []
+  );
 
   useEffect(() => {
-    if (!mockEnabled || (walletConnected && chainConnected)) {
+    if (!mockEnabled || bootstrapAttempted.current) {
       return;
     }
 
+    if (walletConnected && chainConnected) {
+      bootstrapAttempted.current = true;
+      return;
+    }
+
+    bootstrapAttempted.current = true;
+
     let cancelled = false;
+
+    const defaults = mockService.getBootstrapDefaults();
+    if (!walletConnected && defaults.wallet) {
+      dispatch(setMockWalletState(defaults.wallet));
+    }
+
+    if (!chainConnected && defaults.chain) {
+      dispatch(
+        setMockChainState({
+          chain: defaults.chain,
+        })
+      );
+    }
 
     const bootstrapMockState = async () => {
       try {
