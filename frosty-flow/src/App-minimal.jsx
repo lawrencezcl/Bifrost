@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ConfigProvider, Card, Typography, Menu, Row, Col, Statistic, Button, Layout } from 'antd';
-import { DashboardOutlined, SwapOutlined, ReloadOutlined, WalletOutlined, TrendingUpOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SwapOutlined, ReloadOutlined, WalletOutlined, RiseOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Header, Content } = Layout;
@@ -31,7 +31,7 @@ const Dashboard = () => (
             title="累计收益"
             value={282.31}
             precision={2}
-            prefix={<TrendingUpOutlined />}
+            prefix={<RiseOutlined />}
             valueStyle={{ color: '#52c41a' }}
           />
         </Card>

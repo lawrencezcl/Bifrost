@@ -15,7 +15,7 @@ import {
   WalletOutlined,
   SwapOutlined,
   ReloadOutlined,
-  TrendingUpOutlined,
+  RiseOutlined,
   PlusOutlined
 } from '@ant-design/icons';
 
@@ -178,7 +178,7 @@ const Dashboard = () => {
               title="累计收益"
               value={mockTotalValue.totalYield}
               precision={2}
-              prefix={<TrendingUpOutlined />}
+              prefix={<RiseOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
           </Card>

@@ -121,6 +121,19 @@ const walletSlice = createSlice({
       if (state.selectedAccount?.address === address) {
         state.selectedAccount.balance = balance;
       }
+    },
+
+    // 仅用于模拟环境的初始化
+    setMockWalletState: (state, action) => {
+      const { wallet, accounts = [], selectedAccount = null } = action.payload || {};
+
+      state.isConnected = true;
+      state.isConnecting = false;
+      state.currentWallet = wallet || { name: 'Mock Wallet', id: 'mock-wallet' };
+      state.accounts = accounts;
+      state.selectedAccount = selectedAccount || accounts[0] || null;
+      state.error = null;
+      state.signer = null;
     }
   },
   extraReducers: (builder) => {
@@ -170,11 +183,12 @@ const walletSlice = createSlice({
   }
 });
 
-export const { 
-  disconnect, 
-  clearError, 
-  setInstalledWallets, 
-  updateAccountBalance 
+export const {
+  disconnect,
+  clearError,
+  setInstalledWallets,
+  updateAccountBalance,
+  setMockWalletState
 } = walletSlice.actions;
 
 export default walletSlice.reducer;

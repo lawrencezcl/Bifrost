@@ -162,6 +162,16 @@ const chainSlice = createSlice({
     setApi: (state, action) => {
       // 注意：API 实例不会被序列化到 Redux store
       state.api = action.payload;
+    },
+
+    // 仅用于模拟环境的初始化
+    setMockChainState: (state, action) => {
+      const { chain } = action.payload || {};
+
+      state.currentChain = chain || action.payload || null;
+      state.isConnected = Boolean(chain || action.payload);
+      state.isConnecting = false;
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
@@ -226,11 +236,12 @@ const chainSlice = createSlice({
   }
 });
 
-export const { 
-  disconnect, 
-  updateCurrentBlock, 
-  clearError, 
-  setApi 
+export const {
+  disconnect,
+  updateCurrentBlock,
+  clearError,
+  setApi,
+  setMockChainState
 } = chainSlice.actions;
 
 export default chainSlice.reducer;
