@@ -1,4 +1,4 @@
-// Redux Store 主文件
+// Redux Store main file
 import { configureStore } from '@reduxjs/toolkit';
 import walletReducer from './slices/walletSlice';
 import chainReducer from './slices/chainSlice';
@@ -17,9 +17,12 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // 忽略这些路径的序列化检查（因为包含函数等不可序列化的值）
+        // Ignore these paths during serializable checks (they contain non-serializable values)
         ignoredActions: ['wallet/setWallet', 'chain/setApi'],
         ignoredPaths: ['wallet.signer', 'chain.api'],
       },
     }),
 });
+
+export default store;
+

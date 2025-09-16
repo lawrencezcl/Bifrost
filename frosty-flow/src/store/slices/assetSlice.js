@@ -2,7 +2,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import bifrostApi, { STAKING_ASSETS } from '../../api/bifrost';
 import priceApi from '../../api/price';
-import polkadotApi from '../../api/polkadot';
 
 // 异步 thunk：获取用户资产
 export const fetchUserAssets = createAsyncThunk(

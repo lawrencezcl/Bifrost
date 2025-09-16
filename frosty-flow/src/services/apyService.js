@@ -176,14 +176,10 @@ class APYService {
 
   // 从Subsquid API获取APY数据
   async fetchFromSubsquidAPI(assetSymbol) {
-    try {
-      // 这里可以集成Subsquid的GraphQL API
-      // 暂时返回null
-      return null;
-    } catch (error) {
-      console.error('Subsquid API error:', error);
-      return null;
-    }
+    // 这里可以集成Subsquid的GraphQL API
+    console.debug(`Subsquid APY lookup skipped for ${assetSymbol}`);
+    // 暂时返回null
+    return null;
   }
 
   // 从CoinGecko获取质押奖励数据

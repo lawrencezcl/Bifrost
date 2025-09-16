@@ -161,7 +161,25 @@ class MockService {
   // 获取用户资产
   async getUserAssets(address) {
     await this.delay(500);
-    return this.mockAssets;
+
+    if (!address) {
+      return this.mockAssets;
+    }
+
+    const modifier = (address.charCodeAt(address.length - 1) % 5) * 0.01;
+
+    return this.mockAssets.map((asset, index) => {
+      const multiplier = 1 + modifier + index * 0.005;
+      return {
+        ...asset,
+        totalValue: parseFloat((asset.totalValue * multiplier).toFixed(2)),
+        yieldEarned: parseFloat((asset.yieldEarned * multiplier).toFixed(2)),
+        balance: {
+          free: (parseFloat(asset.balance.free) * multiplier).toFixed(2),
+          locked: (parseFloat(asset.balance.locked) * multiplier).toFixed(2)
+        }
+      };
+    });
   }
 
   // 获取质押信息
@@ -191,7 +209,8 @@ class MockService {
         amount,
         mintedAmount: (parseFloat(amount) * 0.98).toFixed(6), // 扣除手续费
         estimatedYield: (parseFloat(amount) * 0.158).toFixed(6), // 预估年收益
-        fee: (parseFloat(amount) * 0.02).toFixed(6)
+        fee: (parseFloat(amount) * 0.02).toFixed(6),
+        account
       }
     };
   }
@@ -227,9 +246,10 @@ class MockService {
         fee: fee.toFixed(6),
         redeemType,
         waitTime,
-        estimatedCompletion: redeemType === 'instant' ? 
-          'immediately' : 
-          new Date(Date.now() + waitTime * 24 * 60 * 60 * 1000).toISOString()
+        estimatedCompletion: redeemType === 'instant' ?
+          'immediately' :
+          new Date(Date.now() + waitTime * 24 * 60 * 60 * 1000).toISOString(),
+        account
       }
     };
   }

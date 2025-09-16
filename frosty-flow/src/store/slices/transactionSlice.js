@@ -77,9 +77,15 @@ export const executeStakeRedeem = createAsyncThunk(
 
       const account = wallet.selectedAccount;
       const signer = await walletApi.getSigner(account.address);
-      
+
       // 执行赎回
-      const result = await bifrostApi.stakeRedeem(account.address, assetId, amount, redeemType);
+      const result = await bifrostApi.stakeRedeem(
+        account.address,
+        assetId,
+        amount,
+        redeemType,
+        { signer }
+      );
       
       // 创建交易记录
       const transaction = {

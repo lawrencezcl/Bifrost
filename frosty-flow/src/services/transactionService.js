@@ -1,7 +1,8 @@
 // 交易历史查询服务
-import { ApiPromise } from '@polkadot/api';
 import { API_ENDPOINTS, TEST_CONFIG } from '../config/networks';
 import walletService from './walletService';
+
+const { VITE_SUBSCAN_API_KEY = '' } = import.meta.env;
 
 class TransactionService {
   constructor() {
@@ -56,7 +57,6 @@ class TransactionService {
         throw new Error('Not connected to network');
       }
 
-      const api = walletService.api;
       const transactions = [];
 
       // 使用Subscan API获取交易历史
@@ -94,7 +94,7 @@ class TransactionService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-API-Key': process.env.REACT_APP_SUBSCAN_API_KEY || ''
+          'X-API-Key': VITE_SUBSCAN_API_KEY
         },
         body: JSON.stringify({
           address,
@@ -152,7 +152,6 @@ class TransactionService {
   // 解析区块中的交易
   async parseBlockTransactions(block, address, blockNumber) {
     try {
-      const api = walletService.api;
       const transactions = [];
       
       const blockTime = Date.now() - (block.header.number.toNumber() * 6000); // 假设6秒出块
@@ -293,7 +292,14 @@ class TransactionService {
 
   extractToAddress(extrinsic) {
     // 从交易中提取目标地址
-    // 这需要根据具体的交易类型来解析
+    try {
+      const args = extrinsic.args || extrinsic.method?.args;
+      if (args && args.length > 1) {
+        return args[1]?.toString() || 'unknown';
+      }
+    } catch (error) {
+      // 忽略解析错误，返回默认值
+    }
     return 'unknown';
   }
 

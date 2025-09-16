@@ -1,5 +1,5 @@
 // 质押赎回页面
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Card,
   Form,

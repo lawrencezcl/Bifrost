@@ -62,6 +62,26 @@ npm run dev
 npm run build
 ```
 
+## Vercel 部署指南
+
+1. **准备工作**
+   - 将仓库推送到 GitHub/GitLab
+   - 注册 [Vercel](https://vercel.com) 账号并关联代码仓库
+
+2. **导入项目**
+   - 在 Vercel 创建新项目，选择 `frosty-flow` 仓库
+   - Vercel 会自动识别到 `vercel.json` 并使用 `npm run build` 构建，输出目录为 `dist`
+
+3. **配置环境变量**
+   - 在「Project Settings → Environment Variables」中，根据 `.env.production.example` 创建变量
+   - 重要变量：`VITE_RPC_ENDPOINT`、`VITE_API_BASE_URL`、`VITE_SUBSCAN_API_KEY` 等
+   - 如果只需演示数据，可将 `VITE_ENABLE_MOCK` 设为 `true`
+
+4. **部署与访问**
+   - 保存配置后点击「Deploy」即可触发构建
+   - 部署完成后，Vercel 会生成一个 `https://<project>.vercel.app` 的访问地址
+   - 如需自定义域名，可在 Vercel 的「Domains」面板中绑定
+
 ## 模拟运行环境
 
 为了方便UI/UX测试，我们提供了一个完整的模拟运行环境，无需连接真实的区块链网络即可测试所有功能。

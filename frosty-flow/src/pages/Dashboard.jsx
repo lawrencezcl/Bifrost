@@ -1,5 +1,6 @@
 // 资产总览主页
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Row,
   Col,
@@ -26,25 +27,17 @@ const Dashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [mockAssets, setMockAssets] = useState([]);
   const [mockTotalValue, setMockTotalValue] = useState({ totalValue: 0, totalYield: 0 });
-  
-  // 模拟状态
-  const isConnected = true;
-  const selectedAccount = null;
-  const currentChain = null;
-  const chainConnected = false;
 
-  // 页面初始化
-  useEffect(() => {
-    loadMockData();
-  }, []);
+  const { isConnected: walletConnected, selectedAccount } = useSelector((state) => state.wallet);
+  const { currentChain, isConnected: chainConnected } = useSelector((state) => state.chain);
 
   // 加载模拟数据
-  const loadMockData = async () => {
+  const loadMockData = useCallback(async () => {
     try {
       setRefreshing(true);
-      const assets = await mockService.getUserAssets('mock-address');
+      const assets = await mockService.getUserAssets(selectedAccount?.address || 'mock-address');
       setMockAssets(assets);
-      
+
       // 计算总价值
       const totalValue = assets.reduce((sum, asset) => sum + asset.totalValue, 0);
       const totalYield = assets.reduce((sum, asset) => sum + asset.yieldEarned, 0);
@@ -54,17 +47,27 @@ const Dashboard = () => {
     } finally {
       setRefreshing(false);
     }
-  };
+  }, [selectedAccount]);
+
+  // 页面初始化
+  useEffect(() => {
+    loadMockData();
+  }, [loadMockData]);
 
   // 格式化余额
-  const formatBalance = (balance, decimals = 18, precision = 4) => {
+  const formatBalance = (balance, precision = 4) => {
     try {
       if (!balance || balance === '0') return '0';
-      const num = parseFloat(balance) / Math.pow(10, decimals);
+      const num = parseFloat(balance);
       return num.toFixed(precision);
     } catch (error) {
       return '0';
     }
+  };
+
+  const formatAddress = (address) => {
+    if (!address) return '';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   // 手动刷新
@@ -84,12 +87,8 @@ const Dashboard = () => {
     // 这里可以打开赎回模态框
   };
 
-  // 模拟连接状态
-  const mockConnected = true;
-  const mockChainConnected = true;
-
   // 未连接钱包状态
-  if (!isConnected) {
+  if (!walletConnected) {
     return (
       <div className="flex-center min-h-96">
         <Card className="text-center p-8">
@@ -120,8 +119,18 @@ const Dashboard = () => {
           <Text type="secondary">
             查看您在各个链上的流动性质押资产
           </Text>
+          {currentChain && (
+            <div className="text-sm text-gray-400 mt-1">
+              当前链：{currentChain.name}
+            </div>
+          )}
+          {selectedAccount && (
+            <div className="text-sm text-gray-400">
+              当前账户：{formatAddress(selectedAccount.address)}
+            </div>
+          )}
         </div>
-        
+
         <Space>
           <Button
             icon={<ReloadOutlined />}
@@ -139,6 +148,15 @@ const Dashboard = () => {
           </Button>
         </Space>
       </div>
+
+      {!chainConnected && (
+        <Alert
+          type="warning"
+          message="尚未连接到区块链网络"
+          description="请连接支持的链以查看真实资产数据，目前展示的是模拟资产信息。"
+          showIcon
+        />
+      )}
 
       {/* 总览统计卡片 */}
       <Row gutter={[16, 16]}>
@@ -200,7 +218,7 @@ const Dashboard = () => {
         }
       >
         <div className="space-y-4">
-          {mockAssets.map((asset, index) => (
+          {mockAssets.map((asset) => (
             <Card key={asset.symbol} size="small" className="asset-card">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -218,11 +236,11 @@ const Dashboard = () => {
                 
                 <div className="text-right">
                   <Text className="font-medium">
-                    {asset.balance.free} {asset.symbol}
+                    {formatBalance(asset.balance.free, 2)} {asset.symbol}
                   </Text>
                   <br />
                   <Text type="secondary">
-                    锁定: {asset.balance.locked}
+                    锁定: {formatBalance(asset.balance.locked, 2)}
                   </Text>
                   <br />
                   <Text className="text-sm" style={{ color: '#52c41a' }}>
