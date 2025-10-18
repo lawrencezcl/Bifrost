@@ -1,11 +1,12 @@
 // 通知中心组件
 import { useState } from 'react';
 import { Dropdown, List, Typography, Empty, Button } from 'antd';
+import { BellOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
-const NotificationCenter = ({ children }) => {
-  const [visible, setVisible] = useState(false);
+const NotificationCenter = () => {
+  const [open, setOpen] = useState(false);
 
   const notifications = []; // 暂时为空
 
@@ -14,11 +15,11 @@ const NotificationCenter = ({ children }) => {
       <div className="p-4 border-b">
         <Text className="font-medium">通知</Text>
       </div>
-      
+
       {notifications.length === 0 ? (
         <div className="p-4">
-          <Empty 
-            description="暂无通知" 
+          <Empty
+            description="暂无通知"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </div>
@@ -40,13 +41,18 @@ const NotificationCenter = ({ children }) => {
 
   return (
     <Dropdown
-      overlay={notificationList}
+      menu={{ items: [] }}
+      dropdownRender={() => notificationList}
       trigger={['click']}
       placement="bottomRight"
-      visible={visible}
-      onVisibleChange={setVisible}
+      open={open}
+      onOpenChange={setOpen}
     >
-      {children}
+      <Button
+        type="text"
+        icon={<BellOutlined />}
+        onClick={() => setOpen(!open)}
+      />
     </Dropdown>
   );
 };

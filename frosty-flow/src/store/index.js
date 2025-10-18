@@ -6,7 +6,7 @@ import assetReducer from './slices/assetSlice';
 import uiReducer from './slices/uiSlice';
 import transactionReducer from './slices/transactionSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     wallet: walletReducer,
     chain: chainReducer,
@@ -23,3 +23,5 @@ export const store = configureStore({
       },
     }),
 });
+
+export default store;
